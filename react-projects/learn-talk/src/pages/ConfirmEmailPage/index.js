@@ -53,6 +53,62 @@ const ConfirmEmailPage = () => {
       otp: otp,
       password: '*****',
     })
+
+    Validate.sendSuccess(
+      'confirmEmail',
+      accProps,
+      window.location.href,
+      Constant.API_BASE_URL + 'confirmAccount',
+      JSON.stringify(dataKibana),
+      'success'
+    )
+
+    Validate.requestPost(
+      Constant.API_BASE_URL + 'confirmAccount',
+      data,
+      function (error, dataRes)
+      {
+        if (error) {
+          setError('Đường truyền mạng không ổn định. Vui lòng thử lại.')
+          Validate.sendError(
+            'confirmEmail',
+            accProps,
+            window.location.href,
+            Constant.API_BASE_URL + 'confirmAccount',
+            JSON.stringify(dataKibana),
+            'Đường truyền mạng không ổn định. Vui lòng thử lại.',
+            JSON.stringify(dataKibana)
+          )
+        } else {
+          if (dataRes.signal !== 0) {
+            Validate.sendSuccess(
+              'confirmEmail',
+              accProps,
+              window.location.href,
+              Constant.API_BASE_URL + 'confirmAccount',
+              JSON.stringify(dataKibana),
+              JSON.stringify(dataRes)
+            )
+            setData(dataRes)
+            getCallback()
+
+            let agent = window.location.userAgent
+            if (agent.indexOf('Android') > -1) {
+              window.KingIDSdk.onHideKeyBoard()
+              window.ee.removeListener('show_keyboard')
+            }
+          }
+        }
+      }
+    )
+  }
+
+  const getCallback = () =>
+  {
+    if (!accProps) {
+      setError('Có lỗi xảy ra. Vui lòng thử lại')
+      return
+    }
   }
 
   const handleCode1 = (e) => {
