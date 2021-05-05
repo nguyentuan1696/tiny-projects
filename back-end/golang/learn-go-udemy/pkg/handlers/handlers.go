@@ -1,9 +1,27 @@
 package handlers
 
 import (
-	"github.com/nguyentuan1696/learn-golang/pkg/render"
 	"net/http"
+
+	"github.com/nguyentuan1696/learn-golang/pkg/config"
+	"github.com/nguyentuan1696/learn-golang/pkg/render"
 )
+
+var Repo *Repository
+type Repository struct {
+	App *config.AppConfig
+}
+
+func NewRepo(a *config.AppConfig) *Repository {
+	return &Repository {
+		App: a,
+	}
+}
+// NewHandlers sets the repository for the handlers
+
+func NewHandlers(r *Repository) {
+	Repo = r
+}
 
 // Home is the handler for the home page
 func Home(w http.ResponseWriter, r *http.Request) {
