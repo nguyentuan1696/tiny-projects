@@ -7,48 +7,35 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-
-	"github.com/nguyentuan1696/learn-golang/pkg/config"
-	"github.com/nguyentuan1696/learn-golang/pkg/models"
+	"github.com/nguyentuan1696/hello-world-udemy/pkg/config"
 )
 
 var functions = template.FuncMap{}
-
-var app *config.AppConfig
-
-// NewTemplates sets the config for the template package
+// NewTemplate sets the config for the temlate package
 func NewTemplates(a *config.AppConfig) {
 	app = a
-}
-
-func AddDefaultData(td *models.TemplateData) *models.TemplateData {
-
-	return td
+	
 }
 
 // RenderTemplate renders a template
-func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
-	var tc map[string]*template.Template
+func RenderTemplate(w http.ResponseWriter, tmpl string) {
+	// get the template cache from the app config
 
-	if app.UseCache {
-		// get the template cache from the app config
-		tc = app.TemplateCache
-	} else {
-		tc, _ = CreateTemplateCache()
+	tc, err := CreateTemplateCache()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Could not get template from template cache")
+		log.Fatal(err)
 	}
 
 	buf := new(bytes.Buffer)
 
-	td = AddDefaultData(td)
+	_ = t.Execute(buf, nil)
 
-	_ = t.Execute(buf, td)
-
-	_, err := buf.WriteTo(w)
+	_, err = buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("error writing template to browser", err)
 	}
